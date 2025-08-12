@@ -96,9 +96,3 @@ http://192.168.1.50:5000
 - **Buzzer**: Provides audible alerts
 
 ---
-
-## 📝 Notes
-
-- Ensure all hardware components are properly connected to the Raspberry Pi GPIO pins as per your script's configuration.
-- Replace `your-username` in the `git clone` command with your actual GitHub username.
-- For production use, consider securing the Flask app with HTTPS and proper authentication.
