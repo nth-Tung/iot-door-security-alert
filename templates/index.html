@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Trang chủ - Hệ thống cảnh báo{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Hệ thống cảnh báo an ninh cửa</h1>
+
+<div class="d-flex gap-3 mb-4 flex-wrap">
+  <div class="card status-card text-white bg-primary flex-fill">
+    <div class="card-body">
+      <h5 class="card-title"><i class="fa-solid fa-person-walking"></i> Chuyển động PIR</h5>
+      <p class="card-text" id="pir">Loading...</p>
+    </div>
+  </div>
+
+  <div class="card status-card text-white bg-success flex-fill">
+    <div class="card-body">
+      <h5 class="card-title"><i class="fa-solid fa-door-closed"></i> Trạng thái cửa</h5>
+      <p class="card-text" id="reed">Loading...</p>
+    </div>
+  </div>
+
+  <div class="card status-card text-white bg-warning flex-fill">
+    <div class="card-body">
+      <h5 class="card-title"><i class="fa-solid fa-bell"></i> Chuông cửa</h5>
+      <p class="card-text" id="button">Loading...</p>
+    </div>
+  </div>
+
+  <div class="card status-card text-white bg-danger flex-fill">
+    <div class="card-body">
+      <h5 class="card-title"><i class="fa-solid fa-exclamation-triangle"></i> Báo động</h5>
+      <p class="card-text" id="alarm">Loading...</p>
+    </div>
+  </div>
+</div>
+
+<h2>Lịch sử sự kiện</h2>
+<div class="border rounded p-3" id="log">Đang tải...</div>
+
+<script>
+  async function fetchStatus() {
+    const res = await fetch('/api/status');
+    const data = await res.json();
+
+    document.getElementById('pir').textContent = data.status.pir ? "Có chuyển động" : "Không";
+    document.getElementById('reed').textContent = data.status.reed ? "Cửa đóng" : "Cửa mở";
+    document.getElementById('button').textContent = data.status.button ? "Không nhấn" : "Đã nhấn";
+    document.getElementById('alarm').textContent = data.status.alarm ? "Đang báo động" : "Bình thường";
+
+    const logDiv = document.getElementById('log');
+    logDiv.innerHTML = "";
+    data.logs.slice().reverse().forEach(item => {
+      const p = document.createElement('p');
+      p.textContent = `[${item.time}] - ${item.event}`;
+      logDiv.appendChild(p);
+    });
+  }
+
+  setInterval(fetchStatus, 2000);
+  window.onload = fetchStatus;
+</script>
+{% endblock %}
