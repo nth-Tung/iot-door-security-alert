@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formataddr
 import traceback
+import config
 
 # import hàm lấy danh sách người nhận
 from email_utils import get_all_receivers
@@ -35,13 +36,6 @@ sensor_status = {
 event_log = []
 log_lock = Lock()
 
-# Cấu hình email gửi
-SENDER_EMAIL = 'your_email@gmail.com'
-SENDER_NAME = 'Hệ thống cảnh báo cửa'
-SENDER_PASSWORD = 'your_app_password'  # Mật khẩu ứng dụng Gmail
-
-SMTP_SERVER = 'smtp.gmail.com'
-SMTP_PORT = 465
 
 # Thời gian debounce gửi email (giây)
 DEBOUNCE_TIME = 120
@@ -58,19 +52,19 @@ def send_email_to_receivers(subject, body):
         return
 
     try:
-        with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT) as smtp:
-            smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
+        with smtplib.SMTP_SSL(config.SMTP_SERVER, config.SMTP_PORT) as smtp:
+            smtp.login(config.SENDER_EMAIL, config.SENDER_PASSWORD)
 
             for name, email in receivers:
                 msg = MIMEMultipart()
-                msg['From'] = formataddr((SENDER_NAME, SENDER_EMAIL))
+                msg['From'] = formataddr((config.SENDER_NAME, config.SENDER_EMAIL))
                 msg['To'] = email
                 msg['Subject'] = subject
 
-                body_with_greeting = f"Xin chào {name},\n\n{body}\n\nTrân trọng,\n{SENDER_NAME}"
+                body_with_greeting = f"Xin chào {name},\n\n{body}\n\nTrân trọng,\n{config.SENDER_NAME}"
                 msg.attach(MIMEText(body_with_greeting, 'plain'))
 
-                smtp.sendmail(SENDER_EMAIL, email, msg.as_string())
+                smtp.sendmail(config.SENDER_EMAIL, email, msg.as_string())
                 print(f"Đã gửi email cảnh báo đến: {name} <{email}>")
 
     except Exception as e:
